@@ -3,7 +3,7 @@ import User from '../models/User';
 import ValidationError from '../lib/ValidationError';
 
 const generateToken = user =>
-  jwt.sign(Object.assign({}, user), process.env.JWT_SECRET, {
+  jwt.sign(Object.assign({}, user.toJSON()), process.env.JWT_SECRET, {
     expiresIn: parseInt(process.env.JWT_EXP, 10),
   });
 // Creates a new user account.  We first check to see if a user already exists
@@ -54,13 +54,13 @@ export async function login({ req, ...attributes }) {
           });
           throw new ValidationError(errors);
         }
+        console.log(existingUser.username);
         return {
           user: existingUser,
           token: generateToken(existingUser),
         };
       })
-      .catch(err => {
-        console.log(err);
+      .catch(() => {
         throw new ValidationError(errors);
       });
   });

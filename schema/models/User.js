@@ -21,19 +21,19 @@ const UserSchema = new Schema({
   friends: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'user',
     },
   ],
   channels: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Message',
+      ref: 'message',
     },
   ],
   messages: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Message',
+      ref: 'message',
     },
   ],
   created_at: {
