@@ -1,8 +1,9 @@
-import { User } from '../models';
+// import { User } from '../models';
 
 export default req => {
   if (req.user) {
-    return User.findById(req.user.id);
+    // const user = await User.findById(req.user.id);
+    return req.user;
   }
-  return Promise.resolve(null);
+  return null;
 };

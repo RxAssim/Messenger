@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from 'graphql';
 
-import { UserType } from '.';
+import { UserType, nodeInterface } from '.';
 
 const LoginUserPayloadType = new GraphQLObjectType({
   name: 'LoginUserPayload',
@@ -8,6 +8,7 @@ const LoginUserPayloadType = new GraphQLObjectType({
     user: { type: new GraphQLNonNull(UserType) },
     token: { type: new GraphQLNonNull(GraphQLString) },
   }),
+  interfaces: [nodeInterface],
 });
 
 export default LoginUserPayloadType;

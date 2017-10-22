@@ -1,10 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
-import mongoose from 'mongoose';
 import jwt from 'express-jwt';
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
+import db from './schema/models';
 import SerializeUser from './schema/lib/SerializeUser';
 import ValidationErrors from './schema/lib/ValidationError';
 
@@ -12,19 +12,6 @@ dotenv.config();
 
 const app = express();
 const logger = morgan('combined');
-
-// Configure mongoose promise
-mongoose.Promise = Promise;
-
-// Connect DB
-mongoose.connection
-  .openUri(process.env.MONGO_URI)
-  .once('open', () => {
-    console.log('DB is ready !');
-  })
-  .on('error', error => {
-    console.warn('Warning', error);
-  });
 
 // =========>Middleware<=========
 
@@ -40,6 +27,7 @@ app.use(
     schema,
     context: {
       viewer: SerializeUser(req),
+      db,
     },
     formatError: error => ({
       message: error.message,
@@ -59,6 +47,8 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(process.env.SERVER_PORT, () => {
-  console.log(`Listening to ${process.env.SERVER_PORT}`);
+db.sequelize.sync({ force: false }).then(() => {
+  app.listen(process.env.SERVER_PORT, () => {
+    console.log(`Listening to ${process.env.SERVER_PORT}`);
+  });
 });

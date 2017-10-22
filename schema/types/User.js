@@ -1,23 +1,27 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLList,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from 'graphql';
+import { connectionArgs, globalIdField } from 'graphql-relay';
+import { nodeInterface, teamConnection } from '.';
 
-import { MessageType, ChannelType } from '.';
+/**
+ * TODO: 
+ *  - Use Postgres instead of MongoDB because of the queries.
+ */
 
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
-    id: { type: new GraphQLNonNull(GraphQLID) },
+    id: globalIdField(),
     username: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
-    friends: { type: new GraphQLList(UserType) },
-    messages: { type: new GraphQLList(MessageType) },
-    channels: { type: new GraphQLList(ChannelType) },
+    teams: {
+      type: teamConnection,
+      args: connectionArgs,
+      resolve: () => {
+        // TODO: add resolver
+      },
+    },
   }),
+  interfaces: () => [nodeInterface],
 });
 
 export default UserType;

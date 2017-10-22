@@ -4,23 +4,33 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon server.js --exec babel-node"
+    "start": "nodemon server.js --exec babel-node",
+    "test": "jest"
   },
   "dependencies": {
+    "babel-core": "^6.26.0",
     "bcrypt": "^1.0.3",
     "dotenv": "^4.0.0",
     "express": "^4.16.1",
     "express-graphql": "^0.6.11",
     "express-jwt": "^5.3.0",
     "graphql": "^0.11.7",
+    "graphql-relay": "^0.5.3",
     "jsonwebtoken": "^8.0.1",
     "moment": "^2.18.1",
     "mongoose": "^4.12.0",
     "morgan": "^1.9.0",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2",
+    "relay-mongodb-connection": "^2.1.0",
+    "sequelize": "^4.15.0",
     "validator": "^9.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-flow": "^6.23.0",
@@ -28,10 +38,12 @@
     "eslint-config-airbnb": "^16.0.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jest": "^21.2.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-prettier": "^2.3.1",
     "eslint-plugin-react": "^7.4.0",
     "flow-bin": "^0.56.0",
+    "jest-cli": "^21.2.1",
     "prettier": "^1.7.4"
   }
 }

@@ -1,14 +1,14 @@
 import { GraphQLObjectType } from 'graphql';
 import * as authMutations from './Auth';
-import AddFriend from './AddFriend';
-import HandleFriendRequest from './HandleFriendRequest';
+// import SendMessage from './SendMessage';
+import CreateTeam from './CreateTeam';
 
 const mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     ...authMutations,
-    AddFriend,
-    HandleFriendRequest,
+    // SendMessage,
+    CreateTeam,
   },
 });
 

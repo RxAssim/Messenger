@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
 import ValidationError from '../lib/ValidationError';
 
 const generateToken = user =>
@@ -13,29 +12,25 @@ const generateToken = user =>
 // Notice the Promise created in the second 'then' statement.  This is done
 // because Passport only supports callbacks, while GraphQL only supports promises
 // for async code!  Awkward!
-export function signup({ req, ...attributes }) {
-  const newUser = new User(attributes);
-
-  return User.findOne({ email: attributes.email }).then(existingUser => {
-    const errors = [];
-    if (existingUser) {
+export function signup({ User }, args) {
+  const errors = [];
+  return User.create(args)
+    .then(createdUser => ({
+      user: createdUser,
+      token: generateToken(createdUser),
+    }))
+    .catch(err => {
+      console.log(err);
       errors.push({
         key: 'email',
         message: 'The email address is already in use.',
       });
-    }
-    if (errors.length) {
       throw new ValidationError(errors);
-    }
-    return newUser.save().then(createdUser => ({
-      user: createdUser,
-      token: generateToken(createdUser),
-    }));
-  });
+    });
 }
 
-export async function login({ req, ...attributes }) {
-  return User.findOne({ email: attributes.email }).then(existingUser => {
+export async function login({ User }, args) {
+  return User.findOne({ where: { email: args.email } }).then(existingUser => {
     const errors = [];
     if (!existingUser) {
       errors.push({
@@ -45,7 +40,7 @@ export async function login({ req, ...attributes }) {
       throw new ValidationError(errors);
     }
     return existingUser
-      .comparePassword(attributes.password)
+      .comparePassword(args.password)
       .then(isMatch => {
         if (!isMatch) {
           errors.push({

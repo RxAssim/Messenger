@@ -1,21 +1,26 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLID,
-  GraphQLNonNull,
-} from 'graphql';
-import GraphQLMoment from '../lib/GraphQLTypes/GraphQLMoment';
-import { UserType, ChannelType } from '.';
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from 'graphql';
+import { globalIdField } from 'graphql-relay';
+import { UserType, ChannelType, nodeInterface } from '.';
 
 const MessageType = new GraphQLObjectType({
   name: 'Message',
   fields: () => ({
-    id: { type: new GraphQLNonNull(GraphQLID) },
-    to: { type: new GraphQLNonNull(ChannelType) },
-    from: { type: new GraphQLNonNull(UserType) },
-    content: { type: new GraphQLNonNull(GraphQLString) },
-    createdAt: { type: new GraphQLNonNull(GraphQLMoment) },
+    id: globalIdField(),
+    text: { type: new GraphQLNonNull(GraphQLString) },
+    channel: {
+      type: new GraphQLNonNull(ChannelType),
+      resolve: () => {
+        // TODO: add resolver
+      },
+    },
+    user: {
+      type: new GraphQLNonNull(UserType),
+      resolve: () => {
+        // TODO: add resolver
+      },
+    },
   }),
+  interfaces: () => [nodeInterface],
 });
 
 export default MessageType;

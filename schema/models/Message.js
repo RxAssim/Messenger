@@ -1,26 +1,16 @@
-import mongoose from 'mongoose';
+export default (sequelize, DataTypes) => {
+  const Message = sequelize.define('message', {
+    text: DataTypes.STRING,
+  });
 
-const { Schema } = mongoose;
+  Message.associate = models => {
+    Message.belongsTo(models.Channel, {
+      foreignKey: { name: 'channelId', field: 'channel_id' },
+    });
+    Message.belongsTo(models.User, {
+      foreignKey: { name: 'userId', field: 'user_id' },
+    });
+  };
 
-const MessageSchema = new Schema({
-  to: {
-    type: Schema.Types.ObjectId,
-    ref: 'Channel',
-  },
-  from: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  content: {
-    type: String,
-    required: [true, 'Content is required.'],
-  },
-  created_at: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-const Message = mongoose.model('message', MessageSchema);
-
-export default Message;
+  return Message;
+};

@@ -1,87 +1,51 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
-const { Schema } = mongoose;
-
-const UserSchema = new Schema({
-  username: {
-    type: String,
-    required: [true, 'Username is required.'],
-    unique: [true, 'Email already used'],
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required.'],
-    unique: [true, 'Email already in use'],
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required.'],
-  },
-  friends: [
+export default (sequelize, DataTypes) => {
+  const User = sequelize.define(
+    'user',
     {
-      type: Schema.Types.ObjectId,
-      ref: 'user',
+      username: {
+        type: DataTypes.STRING,
+        unique: true,
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: true,
+      },
+      password: DataTypes.STRING,
     },
-  ],
-  channels: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'message',
+      instanceMethods: {
+        comparePassword(candidatePassword) {
+          return new Promise((resolve, reject) => {
+            bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+              if (err) {
+                reject(err);
+              }
+              resolve(isMatch);
+            });
+          });
+        },
+      },
     },
-  ],
-  messages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'message',
-    },
-  ],
-  created_at: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  );
 
-// save the user's hashed password
-UserSchema.pre('save', function hashPassword(next) {
-  if (this.isModified('password') || this.isNew) {
-    bcrypt
-      .hash(this.password, 10)
-      .then(hashedPassword => {
-        this.password = hashedPassword;
-        next();
-      })
-      .catch(err => {
-        next(err);
-      });
-  } else {
-    next();
-  }
-});
-
-// compare password with db
-UserSchema.methods.comparePassword = function comparePassword(
-  candidatePassword,
-) {
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(isMatch);
+  User.associate = models => {
+    User.belongsToMany(models.Team, {
+      through: 'member',
+      foreignKey: { name: 'userId', field: 'user_id' },
     });
-  });
+    User.belongsToMany(models.Channel, {
+      through: 'channel_member',
+      foreignKey: { name: 'userId', field: 'user_id' },
+    });
+  };
+
+  User.beforeCreate(user =>
+    bcrypt.hash(user.password, 10).then(hashedPw => {
+      user.password = hashedPw;
+    }),
+  );
+
+  return User;
 };
-// Duplicate the ID field.
-UserSchema.virtual('id').get(function changeId() {
-  return this._id.toHexString();
-});
-
-// Ensure virtual fields are serialised.
-UserSchema.set('toJSON', {
-  virtuals: true,
-});
-
-const User = mongoose.model('user', UserSchema);
-
-export default User;
